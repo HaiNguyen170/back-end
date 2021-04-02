@@ -1,10 +1,10 @@
-package com.example.emailapp;
+package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MegazineSpringMasterApplicationTests {
+class MegazineProjectApplicationTests {
 
 	@Test
 	void contextLoads() {
