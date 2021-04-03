@@ -9,6 +9,4 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 	List<Article> findByTitleContaining(String title);
 	List<Article> findByActive(boolean active);
 	Boolean existsByTitle(String title);
-	
-	void deleteByTitle(String title);
 }

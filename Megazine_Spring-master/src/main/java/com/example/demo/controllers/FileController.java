@@ -68,11 +68,11 @@ public class FileController {
 		// TODO: process POST request
 		String message = "";
 		try {
-			store(file); // save file into databse
+			store(file);
 			message = "Uploaded the file successfully : " + file.getOriginalFilename();
 			return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse(message));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new MessageResponse(message)); // if save failed --> throw Error
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new MessageResponse(message));
 		}
 	}
 
@@ -87,14 +87,12 @@ public class FileController {
 		return ResponseEntity.status(HttpStatus.OK).body(files);
 	}
 
-	@GetMapping(value = "/files/{id}") // download file
+	@GetMapping(value = "/files/{id}")
 	public ResponseEntity<byte[]> getFile(@PathVariable String id) {
-		File file = fileRepository.findById(id).get(); // find id of file and download
+		File file = fileRepository.findById(id).get();
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
 				.body(file.getData());
 	}
-	
-	
 
 }

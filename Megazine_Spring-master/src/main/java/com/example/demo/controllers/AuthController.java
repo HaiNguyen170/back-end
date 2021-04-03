@@ -63,8 +63,8 @@ public class AuthController {
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-		SecurityContextHolder.getContext().setAuthentication(authentication); // provide secure for email and password
-		String jwt = jwtUtils.generateJwtToken(authentication); // generate a token type jwt
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		String jwt = jwtUtils.generateJwtToken(authentication);
 
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
@@ -83,82 +83,76 @@ public class AuthController {
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
 		// TODO: process POST request
 		
-		// Check conditions
-		 if (userRepository.existsByUsername(signupRequest.getUsername())) { // check if signup name which are inserted by user is already exists in database
-			return ResponseEntity.badRequest().body(new MessageResponse("Error : Username is already taken!"));// unauthorize to create account
+		 if (userRepository.existsByUsername(signupRequest.getUsername())) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error : Username is already taken!"));
 		}
-		if (userRepository.existsByEmail(signupRequest.getEmail())) { // check if signup email which are inserted by user is already exists in database
-			return ResponseEntity.badRequest().body(new MessageResponse("Error : Email is already taken!"));// unauthorize to create account
+		if (userRepository.existsByEmail(signupRequest.getEmail())) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error : Email is already taken!"));
 		}
 
 		// Create new user's account
 		
+		//Falcuty falcuty = falcutyRepository.findById(i)
+		//		.orElseThrow(() -> new RuntimeException("Error : Falcuty is not found"));;
+		//Falcuty falcuty_new = new Falcuty("FALCUTY_IB");
 		User user = new User(signupRequest.getUsername(), signupRequest.getEmail(),
 				encoder.encode(signupRequest.getPassword()), signupRequest.getAddress(),
-				signupRequest.getPhonenumber()); // initial a new user 
+				signupRequest.getPhonenumber());
 		Set<String> strRoles = signupRequest.getRole();
-		Set<Role> roles = new HashSet<>(); // initial a new set of roles (set almost the same with list)
+		Set<Role> roles = new HashSet<>();
 		//Set Falcuty
-		Falcuty falcuty = new Falcuty();// initial a new falcuty
-		
-		// set case
-		switch (signupRequest.getFalcuty_id()) { // user insert falcuty
-		case "SE":  
-			falcuty = falcutyRepository.findByName(EFalcuty.FALCUTY_SE) // system find falcuty name in database
-					.orElseThrow(() -> new RuntimeException("Error : Falcuty is not found")); // or if falcuty name not exist in database --> return error
+		Falcuty falcuty = new Falcuty();
+		switch (signupRequest.getFalcuty_id()) {
+		case "SE":
+			falcuty = falcutyRepository.findByName(EFalcuty.FALCUTY_SE)
+					.orElseThrow(() -> new RuntimeException("Error : Falcuty is not found"));
 			break;
 		case "AI":
-			falcuty = falcutyRepository.findByName(EFalcuty.FALCUTY_AI)// system find falcuty name in database
-			.orElseThrow(() -> new RuntimeException("Error : Falcuty is not found"));// or if falcuty name not exist in database --> return error
+			falcuty = falcutyRepository.findByName(EFalcuty.FALCUTY_AI)
+			.orElseThrow(() -> new RuntimeException("Error : Falcuty is not found"));
 			break;
 		case "IB":
-			falcuty = falcutyRepository.findByName(EFalcuty.FALCUTY_IB)// system find falcuty name in database
-			.orElseThrow(() -> new RuntimeException("Error : Falcuty is not found"));// or if falcuty name not exist in database --> return error
+			falcuty = falcutyRepository.findByName(EFalcuty.FALCUTY_IB)
+			.orElseThrow(() -> new RuntimeException("Error : Falcuty is not found"));
 			break;
 		case "SA":
-			falcuty = falcutyRepository.findByName(EFalcuty.FALCUTY_SA)// system find falcuty name in database
-			.orElseThrow(() -> new RuntimeException("Error : Falcuty is not found"));// or if falcuty name not exist in database --> return error
+			falcuty = falcutyRepository.findByName(EFalcuty.FALCUTY_SA)
+			.orElseThrow(() -> new RuntimeException("Error : Falcuty is not found"));
 			break;
 		}
-		user.setFalcuty(falcuty); // if found falcuty name in database --> set these user have that falcuty
-		
+		user.setFalcuty(falcuty);
 		// Set Roles
-		if (strRoles == null || strRoles.isEmpty()) { // if user not choose role type
-			Role userRole = roleRepository.findByName(ERole.ROLE_GUEST) // system find role name in database
-					.orElseThrow(() -> new RuntimeException("Error : Role is not found" + signupRequest.getRole())); // if role name not exist in database --> throw Error
-			roles.add(userRole); // else, role name exist --> default set role = GUEST
+		if (strRoles == null || strRoles.isEmpty()) {
+			Role userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
+					.orElseThrow(() -> new RuntimeException("Error : Role is not found" + signupRequest.getRole()));
+			roles.add(userRole);
 		} else {
 			strRoles.forEach(role -> {
 				switch (role) {
 				case "admin":
-					Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN) // similar with above
+					Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
 							.orElseThrow(() -> new RuntimeException("Error : Role is not found"));
 					roles.add(adminRole);
 					break;
 				case "coordinator":
-					Role coordinatorRole = roleRepository.findByName(ERole.ROLE_MKT_COORDINATOR) // similar with above
+					Role coordinatorRole = roleRepository.findByName(ERole.ROLE_MKT_COORDINATOR)
 							.orElseThrow(() -> new RuntimeException("Error : Role is not found"));
 					roles.add(coordinatorRole);
 					break;
 				case "manager":
-					Role managerRole = roleRepository.findByName(ERole.ROLE_MKT_MANAGER) // similar with above
+					Role managerRole = roleRepository.findByName(ERole.ROLE_MKT_MANAGER)
 							.orElseThrow(() -> new RuntimeException("Error : Role is not found"));
 					roles.add(managerRole);
 					break;
-				case "student":
-					Role studentRole = roleRepository.findByName(ERole.ROLE_STUDENT) // similar with above
+				default:
+					Role studentRole = roleRepository.findByName(ERole.ROLE_STUDENT)
 							.orElseThrow(() -> new RuntimeException("Error : Role is not found"));
 					roles.add(studentRole);
-					break;
-				default:
-					Role guestRole = roleRepository.findByName(ERole.ROLE_GUEST) // default set role = GUEST if register without choosing role
-							.orElseThrow(() -> new RuntimeException("Error : Role is not found"));
-					roles.add(guestRole);
 				}
 			});
 		}
-		user.setRoles(roles); // save role of user
-		userRepository.save(user); // save all user informations
+		user.setRoles(roles);
+		userRepository.save(user);
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 		
 	}

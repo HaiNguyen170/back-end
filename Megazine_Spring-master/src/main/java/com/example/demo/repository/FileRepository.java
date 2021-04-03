@@ -11,5 +11,4 @@ public interface FileRepository extends JpaRepository<File, String>{
 	
 	/*-Now we can use FileRepository with JpaRepository's method such as : save(File)
 	 * ,findById(id),findAll()*/
-	
 }

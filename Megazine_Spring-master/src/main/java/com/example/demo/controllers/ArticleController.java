@@ -76,25 +76,6 @@ public class ArticleController {
 		return new ResponseEntity<>(articleRequest,HttpStatus.OK);
 		
 	}
-	
-	@DeleteMapping("/delete")
-	public ResponseEntity<?> deleteArticle(@RequestParam String title) {
-		String message = "";
-		try {
-			boolean isvalidarticle = articleRepository.existsByTitle(title);
-			if (isvalidarticle) {
-				articleRepository.deleteByTitle(title);
-				message = "deleted successfully";
-				return new ResponseEntity<> (message, HttpStatus.OK);
-			}
-			else {
-				return new ResponseEntity<> (message, HttpStatus.NOT_FOUND);
-			}
-		}
-		catch (Exception e) {
-			message = e.getMessage();
-			return new ResponseEntity<> (message, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+
 
 }

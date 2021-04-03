@@ -1,7 +1,5 @@
 package com.example.demo.payload.request;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.validation.constraints.*;
 import com.example.demo.models.Article;
 
@@ -22,7 +20,7 @@ public class ArticleRequest {
 	@NotBlank
 	private String falctuty;
 	
-	@NotBlank
+	@NotBlank 
 	private String userid;
 
 	public String getTitle() {
